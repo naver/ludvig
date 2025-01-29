@@ -1,0 +1,13 @@
+tag: "sam"
+dst_dir: logs/SPIn
+prune_gaussians: .50
+feature:
+  name: predictors.sam.SAMDataset
+  thres: .4
+  multimask_output: True
+  sam_ckpt: ./checkpoints/sam_vit_h_4b8939.pth #sam2_hiera_large.pt #
+  scribble: dataset/SPIn-NeRF_masks/{}
+evaluation:
+  name: evaluation.spin_nvos.segmentation.SegmentationSPInSAM
+  segmentation_3d: True
+  maskdir: dataset/SPIn-NeRF_masks/{}

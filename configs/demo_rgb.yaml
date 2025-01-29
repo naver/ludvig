@@ -1,0 +1,5 @@
+tag: "demo_rgb"
+dst_dir: logs/
+feature:
+  name: predictors.dino.BaseDataset
+  directory: dataset/stump/images

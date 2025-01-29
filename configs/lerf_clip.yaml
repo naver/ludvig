@@ -1,0 +1,5 @@
+dst_dir: logs/lerf
+evaluate: dataset/lerf_ovs/label
+feature:
+  name: predictors.clip.CLIPDataset
+apply_pca: True

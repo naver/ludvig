@@ -1,0 +1,13 @@
+dst_dir: logs/lerf
+evaluate: dataset/lerf_ovs/label
+sam_ckpt: ./checkpoints/sam_vit_h_4b8939.pth
+diffusion_cfg:
+  num_neighbors: 200
+  num_iterations: 200
+  feature_bandwidth: .5
+  reg_bandwidth: .025
+  logreg: .001
+evaluation:
+  cutoff: .93
+evaluation_diffusion:
+  cutoff: .01

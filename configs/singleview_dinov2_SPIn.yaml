@@ -1,0 +1,12 @@
+tag: "singleview_dinov2"
+dst_dir: logs/SPIn
+evaluation:
+  name: evaluation.spin_nvos.segmentation.SegmentationSPInDINOv2
+  segmentation_3d: False
+  single_view: True
+  maskdir: dataset/SPIn-NeRF_masks/{}
+  logreg: 1
+  model: 
+    name: dinov2.model.DINOv2
+    config_file: ./dinov2/configs/vitg14_pretrain.yaml
+    pretrained_weights: ./checkpoints/dinov2_vitg14_reg4_pretrain.pth

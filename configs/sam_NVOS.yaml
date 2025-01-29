@@ -1,0 +1,14 @@
+tag: "sam"
+dst_dir: logs/NVOS
+prune_gaussians: .50
+feature:
+  name: predictors.sam.SAMDataset
+  thres: 1
+  multimask_output: False
+  sam_ckpt: ./checkpoints/sam_vit_h_4b8939.pth #sam2_hiera_large.pt for SAM2
+  scribble: dataset/llff_masks/{{}}/{} 
+evaluation:
+  name: evaluation.spin_nvos.segmentation.SegmentationNVOSSAM
+  segmentation_3d: True
+  thresholding: 75 # "li" for SAM2
+  maskdir: dataset/llff_masks/{{}}/{} 

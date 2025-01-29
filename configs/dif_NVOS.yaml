@@ -1,0 +1,25 @@
+tag: "dif"
+dst_dir: logs/NVOS
+prune_gaussians: .50
+feature:
+  name: predictors.dino.DINOv2Dataset
+  dino_ckpt: ./checkpoints/dinov2_vitg14_reg4_pretrain.pth
+  dino_cfg: ./dinov2/configs/vitg14_pretrain.yaml
+  n_components: 40
+  eigval_weighting: True
+  sliding_window:
+    name: utils.sliding_windows.SlidingWindow
+    crop_size: 840
+    stride: 200
+evaluation:
+  name: evaluation.spin_nvos.diffusion.SegmentationDiffusionNVOS
+  segmentation_3d: True
+  sam_ckpt: ./checkpoints/sam_vit_h_4b8939.pth
+  maxpos: .1
+  multimask_output: False
+  thresholding: li
+  maskdir: dataset/llff_masks/{{}}/{} 
+  diffusion_cfg:
+   num_neighbors: 200
+   num_iterations: 100
+   trace_name: 0

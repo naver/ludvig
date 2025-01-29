@@ -1,0 +1,7 @@
+tag: "demo"
+dst_dir: logs/
+feature:
+  name: predictors.dino.DINOv2Dataset
+  dino_ckpt: ./checkpoints/dinov2_vitg14_reg4_pretrain.pth
+  dino_cfg: ./dinov2/configs/vitg14_pretrain.yaml
+  n_components: 40

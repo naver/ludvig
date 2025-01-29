@@ -1,0 +1,7 @@
+tag: "depth"
+dst_dir: logs/SPIn
+evaluation:
+  name: evaluation.spin_nvos.segmentation.SegmentationSPInDINOv2
+  segmentation_3d: True
+  scribbles_are_masks: True
+  maskdir: dataset/SPIn-NeRF_masks/{}

@@ -1,0 +1,13 @@
+dst_dir: logs/lerf
+evaluate: dataset/lerf_ovs/label
+diffusion_cfg:
+  num_neighbors: 200
+  num_iterations: 200
+  feature_bandwidth: .5
+  reg_bandwidth: 2
+  logreg: .001
+evaluation:
+  cutoff: .8
+  smooth: 5
+evaluation_diffusion:
+  cutoff: 0
