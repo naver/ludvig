@@ -10,7 +10,7 @@ from gaussiansplatting.scene.camera_scene import CamScene
 from gaussiansplatting.arguments import PipelineParams
 
 from utils.image import save_img
-from utils.config import Config
+from utils.config import Config, config_to_instance
 from utils.camera import interpolate_cameras
 from utils.pca import save_pcas
 
@@ -134,6 +134,8 @@ class LUDVIGBase:
             )
         save_dir = os.path.join(self.logdir, "features", name)
         os.makedirs(save_dir, exist_ok=True)
+        if joint_fn is not None and isinstance(joint_fn, dict):
+            joint_fn = config_to_instance(**joint_fn)
         for i, camera in enumerate(cameras):
             istr = str(i).zfill(3)
             rgb_image = self.render_rgb(camera)["render"]
@@ -144,8 +146,8 @@ class LUDVIGBase:
             elif pca:
                 os.makedirs(os.path.join(save_dir, f"feat_{istr}"), exist_ok=True)
                 save_pcas(
-                    feat_img, os.path.join(save_dir, f"feat_{istr}"), saturate=saturate_pca
+                    feat_img[:3], os.path.join(save_dir, f"feat_{istr}"), saturate=saturate_pca
                 )
             else:
                 save_img(os.path.join(save_dir, f"rgb_{istr}.jpg"), rgb_image)
-                save_img(os.path.join(save_dir, f"feat_{istr}.jpg"), feat_img, **kwargs)
+                save_img(os.path.join(save_dir, f"feat_{istr}.jpg"), feat_img[:3], **kwargs)

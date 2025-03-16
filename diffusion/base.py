@@ -45,9 +45,6 @@ class GraphDiffusion:
         self.trace_name = trace_name
         self.logdir = logdir
         self.eps = eps
-        if self.logdir is not None:
-            self.logdir = os.path.join(logdir, "diffusion")
-            os.makedirs(self.logdir, exist_ok=True)
 
     def compute_knn_graph(self):
         """Extract K nearest euclidean neighbors for each Gaussian."""
@@ -201,10 +198,12 @@ class GraphDiffusion:
             return
         cam = self.trace_to_camera()
         tstr = str(t).zfill(3)
-        feat = self.render_fn(f.repeat(1, 3), cam)[:1]
+        feat = self.render_fn(f.sum(1, keepdim=True).repeat(1, 3), cam)[:1]
+        diffusion_dir = os.path.join(self.logdir, "diffusion")
+        os.makedirs(diffusion_dir, exist_ok=True)
         save_img(
-            os.path.join(self.logdir, f"t{tstr}.png"),
+            os.path.join(diffusion_dir, f"t{tstr}.png"),
             viz_normalization(feat).squeeze(),
             text=f"Step {t+1}",
-            font_size=80,
+            font_size=60,
         )

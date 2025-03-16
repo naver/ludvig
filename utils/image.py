@@ -15,8 +15,9 @@ def image_from_path(image_folder, cam_name, resize_down=1600, normalize=False):
     image_path = os.path.join(image_folder, cam_name + ext)
     image = Image.open(image_path)
     orig_w, orig_h = image.size
-    if resize_down and orig_w > resize_down:
-        global_down = orig_w / resize_down
+    orig = max(orig_w, orig_h)
+    if resize_down and orig > resize_down:
+        global_down = orig / resize_down
     else:
         global_down = 1
     resolution = (int(orig_w / global_down), int(orig_h / global_down))

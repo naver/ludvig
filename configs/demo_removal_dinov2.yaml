@@ -1,4 +1,4 @@
-dst_dir: logs/lerf
+dst_dir: logs
 prune_gaussians: 600000
 feature:
   name: predictors.dino.DINOv2Dataset

@@ -11,9 +11,11 @@ This repository contains code for [LUDVIG: Learning-free Uplifting of 2D Visual 
 1. [Setup](#setup)
 2. [Project Structure](#project-structure)
 3. [Demo](#demo)
+   - [Demo for feature uplifting](#demo-for-feature-uplifting)
+   - [Demo for open-vocabulary object removal](#demo-for-open-vocabulary-object-removal) 
 4. [Reproducing results](#reproducing-results)
-   - [Foreground/background segmentation](#foregroundbackground-segmentation-1)
-   - [Open-vocabulary object detection](#open-vocabulary-object-detection-1)
+   - [Foreground/background segmentation](#foregroundbackground-segmentation)
+   - [Open-vocabulary object localization](#open-vocabulary-object-localization)
 5. [Citing LUDVIG](#citing-ludvig)
 6. [License](#license)
 
@@ -52,14 +54,14 @@ Additionally, you should have the following folders in `ludvig/`  (e.g. as symbo
 
 ### Data
 
-For this demo, we use the `stump` scene from Mip-NeRF 360, with the pretrained Gaussian Splatting representation provided by the authors of Gaussian Splatting. <br>
-First download the scene and weights: 
+For this demo, we use the `stump` and `bonsai` scenes from Mip-NeRF 360, with the pretrained Gaussian Splatting representation provided by the authors of Gaussian Splatting. <br>
+First, download the scene and weights: 
 ```
 bash script/demo_download.sh
 ```
-This saves the data in `dataset/stump` and model weights in `dataset/stump/gs`.
+This saves the data in `dataset/stump`,`dataset/bonsai` and model weights in `dataset/stump/gs`, `dataset/bonsai/gs`.
 
-### Running the demo
+### Demo for feature uplifting
 The following script will uplift DINOv2 features and save visualizations of the uplifted features:
 ```
 python demo.py
@@ -90,15 +92,41 @@ The dataset loads the scene images, predicts DINOv2 features and performs dimens
 <br>
 Currently supported numbers of features are {1, 2, 3, 10, 20, 30, 40, 50, 100, 200, 256, 512}. If you need to uplift features with another dimension, you can add the option at line 421 [here](gaussiansplatting/submodules/diff-gaussian-rasterization/cuda_rasterizer/apply_weights.cu) and compile again.
 
-**Directly uplifting existing 2D feature maps.** If you directly have features or masks to uplift, you can use [predictors.base.BaseDataset](./predictors/base.py) instead. The path to your features should be given as `directory` argument to the dataset, as in [configs/demo_rgb.yaml](./configs/demo_rgb.yaml). As a mock example, running `python demo.py --rgb` will directly uplif and reproject RGB images. <br>
+**Directly uplifting existing 2D feature maps.** If you directly have features or masks to uplift, you can use [predictors.base.BaseDataset](./predictors/base.py) instead. The path to your features should be given as `directory` argument to the dataset, as in [configs/demo_rgb.yaml](./configs/demo_rgb.yaml). As a mock example, running `python demo.py --rgb` will directly uplift and reproject RGB images. <br>
 Note that the name of your features should match camera names (*i.e.* the names of RGB images used for training).
 
 #### Visualization and evaluation
 
 The method `model.save()` saves uplifted features and visualizations in `logs/demo/`. <br>
-You can also define your own postprocessing or evaluation procedure by subclassing [evaluation.base.EvaluationBase](./evaluation/base.py) and adding it to the configuration file under `evaluation`. You can take example from our experimental setup for SPIn-NeRF and NVOS.
+You can also define your own postprocessing or evaluation procedure by subclassing [evaluation.base.EvaluationBase](./evaluation/base.py) and adding it to the configuration file under `evaluation`, as done in our experimental setup for SPIn-NeRF and NVOS and in the demo below.
 
 ![3D DINOv2 PCA of first *stump* image from Mip-NeRF 360](demo.jpg)
+
+
+### Demo for open-vocabulary object removal
+
+In this demo, we will remove the `bonsai` from the downloaded scene using the text query "bonsai in a ceramic pot".
+To this end, we:
+1. uplift DINOv2 features using [configs/demo_removal_dinov2.yaml](./configs/demo_removal_dinov2.yaml)
+2. uplift CLIP features using [configs/demo_removal_clip.yaml](./configs/demo_removal_clip.yaml)
+3. run open-vocabulary object removal based on DINOv2 and CLIP features, using [configs/demo_removal_eval.yaml](./configs/demo_removal_eval.yaml)
+
+The following script runs these three steps:
+```
+python demo_removal.py
+```
+Steps **1** and **2** are performed as in the previous demo, calling [predictors.dino.DINOv2Dataset](./predictors/dino.py) and [predictors.clip.CLIPDataset](./predictors/clip.py). Note that CLIP feature uplifting takes longer due to the sliding window mechanism used to generate CLIP feature maps.
+
+Step **3** calls [evaluation.removal.clip_diffusion.CLIPDiffusionRemoval](./evaluation/removal/clip_diffusion.py), which computes 3D relevancy scores for the text query "bonsai in a ceramic pot". It then constructs a graph based on DINOv2 feature similarities, using the 3D CLIP relevancies to initialize the node weights and define the regularization term. <br>
+The resulting 3D weights are thresholded to obtain a 3D segmentation mask. To remove the object, we simply remove all Gaussians pertaining to the 3D mask.
+
+Various visualizations are saved in `logs/bonsai`, including:
+- DINOv2 features in `logs/bonsai/dinov2/features/` (top-right image)
+- CLIP features in `logs/bonsai/clip/features/` (bottom-right image)
+- 2D RGB images rendered without the object in `logs/bonsai/removal` (bottom-left image).
+
+![3D DINOv2 and CLIP PCAs and object removal for the first *bonsai* image from Mip-NeRF 360](demo_removal.jpg)
+
 
 ## Reproducing results
 
@@ -183,7 +211,7 @@ with the following arguments:
 </details>
 
 
-### Open-vocabulary object detection
+### Open-vocabulary object localization
 
 #### Data
 

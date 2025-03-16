@@ -1,4 +1,5 @@
-dst_dir: logs/lerf
+dst_dir: logs
+load_ply: dinov2/gaussians.ply
 feature:
   name: predictors.clip.CLIPDataset
 normalize: True

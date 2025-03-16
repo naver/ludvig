@@ -1,0 +1,12 @@
+dst_dir: logs
+load_ply: dinov2/gaussians.ply
+feature: clip/features.npy
+evaluation:
+  name: evaluation.removal.clip_diffusion.CLIPDiffusionRemoval
+  prompt: "bonsai in a ceramic pot"
+  diffusion_cfg:
+   num_neighbors: 160
+   num_iterations: 200
+   feature_bandwidth: 5
+   reg_bandwidth: 1
+  thresholding: .006
