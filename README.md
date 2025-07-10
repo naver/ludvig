@@ -1,6 +1,6 @@
-# LUDVIG: Learning-free Uplifting of 2D Visual features to Gaussian Splatting scenes
+# LUDVIG: Learning-free Uplifting of 2D Visual features to Gaussian Splatting scenes (ICCV 2025)
 
-This repository contains code for [LUDVIG: Learning-free Uplifting of 2D Visual features to Gaussian Splatting scenes](https://juliettemarrie.github.io/ludvig/). LUDVIG uses a learning-free approach to uplift visual features from models such as DINOv2, SAM and CLIP into 3D Gaussian Splatting scenes. It refines 3D features, such as coarse segmentation masks, based on a graph diffusion process that incorporates the 3D geomtry of the scene and DINOv2 feature similarities. We evaluate on foreground/background and open-vocabulary object segmentation tasks.
+This repository contains code for [LUDVIG: Learning-free Uplifting of 2D Visual features to Gaussian Splatting scenes](https://juliettemarrie.github.io/ludvig/), published at **ICCV 2025**. LUDVIG uses a learning-free approach to uplift visual features from models such as DINOv2, SAM, and CLIP into 3D Gaussian Splatting scenes. It refines 3D features, such as coarse segmentation masks, based on a graph diffusion process that incorporates the 3D geometry of the scene and DINOv2 feature similarities. We evaluate on foreground/background and open-vocabulary object segmentation tasks.
 
 ![LUDVIG Main Figure](figure.png)
 
@@ -250,11 +250,11 @@ dataset/lerf_ovs
 
 If you find our work useful, please consider citing us:
 ```
-@article{marrie2024ludvig,
-    title={LUDVIG: Learning-free Uplifting of 2D Visual features to Gaussian Splatting scenes},
+@inproceedings{marrie2025ludvig,
+    title={LUDVIG: Learning-Free Uplifting of 2D Visual Features to Gaussian Splatting Scenes},
     author={Marrie, Juliette and Menegaux, Romain and Arbel, Michael and Larlus, Diane and Mairal, Julien},
-    journal={arXiv preprint arXiv:2410.14462},
-    year={2024}
+    booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    year={2025}
 }
 ```
 
