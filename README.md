@@ -303,4 +303,4 @@ For any inquiries or contributions, please reach out to jltmarrie@gmail.com.
 
 ## License
 
-*LUDVIG*, Copyright (C) 2024, 2025 Inria and Naver Corporation. All Rights Reserved. [License](./LICENSE.txt).
+See [License](./LICENSE.txt).
