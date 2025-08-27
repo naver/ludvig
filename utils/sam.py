@@ -1,8 +1,6 @@
 import torch
 import numpy as np
 from segment_anything import sam_model_registry, SamPredictor
-from sam2.build_sam import build_sam2
-from sam2.sam2_image_predictor import SAM2ImagePredictor
 from skimage import filters
 from torchvision.transforms.functional import to_pil_image
 from .image import resize
@@ -10,6 +8,8 @@ from .evaluation import segmentation_2d
 
 
 def load_sam2(ckpt_path):
+    from sam2.build_sam import build_sam2
+    from sam2.sam2_image_predictor import SAM2ImagePredictor
     model_cfg = "sam2_hiera_l.yaml"
     return SAM2ImagePredictor(build_sam2(model_cfg, ckpt_path))
 

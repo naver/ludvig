@@ -1,0 +1,6 @@
+dst_dir: logs/ScanNet
+prune_gaussians: .50
+apply_pca: True
+l2norm_pca: True
+feature:
+  name: predictors.scannet.ScanNetDataset

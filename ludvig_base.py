@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from gaussiansplatting.gaussian_renderer import render
 from gaussiansplatting.scene import GaussianModel
 from gaussiansplatting.scene.camera_scene import CamScene
+from gaussiansplatting.scene import Scene
 from gaussiansplatting.arguments import PipelineParams
 
 from utils.image import save_img
@@ -28,13 +29,13 @@ def reproducibility(seed):
 class LUDVIGBase:
     def __init__(self, cfg) -> None:
         self.config = Config(cfg.config)
-        self.init_gaussians(cfg)
         tag = self.config.get("tag", "")
         if 'tag' in cfg and cfg.tag:
             tag = "/".join((cfg.tag, tag))
         assert tag, "No tag provided."
         self.scene = tag.split("/")[0]
         self.logdir = os.path.join(self.config.dst_dir, tag)
+        self.init_gaussians(cfg)
 
     def render_rgb(self, cam):
         """Render RGB image from camera."""
@@ -51,18 +52,31 @@ class LUDVIGBase:
         if os.path.isdir(gs_source):
             ply_file = next(f for f in os.listdir(gs_source))
             gs_source = os.path.join(gs_source, ply_file)
-        self.gaussian.load_ply(gs_source)
-        self.gaussian.max_radii2D = torch.zeros(
-            (self.gaussian.get_xyz.shape[0]), device="cuda"
-        )
         self.colmap_cameras = None
         self.render_cameras = None
 
         if self.colmap_dir is not None:
-            scene = CamScene(self.colmap_dir, h=self.img_height, w=self.img_width)
-            self.cameras_extent = scene.cameras_extent
-            self.colmap_cameras = scene.cameras
-
+            if "sparse" in os.listdir(self.colmap_dir):
+                self.gaussian.load_ply(gs_source)
+                scene = CamScene(self.colmap_dir, h=self.img_height, w=self.img_width)
+                self.cameras_extent = scene.cameras_extent
+                self.colmap_cameras = scene.cameras
+            else:
+                dataset = Config(dict(
+                    model_path = self.logdir,
+                    source_path = self.colmap_dir,
+                    white_background = True,
+                    eval = True,
+                    resolution = 1,
+                    data_device = "cuda",
+                ))
+                scene = Scene(dataset, self.gaussian)
+                self.colmap_cameras = scene.getTrainCameras()
+                self.gaussian.load_ply(gs_source)
+        self.gaussian.max_radii2D = torch.zeros(
+            (self.gaussian.get_xyz.shape[0]), device="cuda"
+        )
+        print(len(self.gaussian._xyz), "Gaussians.")
         self.background_tensor = torch.tensor(
             [0, 0, 0], dtype=torch.float32, device="cuda"
         )

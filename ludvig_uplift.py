@@ -92,8 +92,10 @@ class LUDVIGUplift(LUDVIGBase):
             if self.save_visualizations:
                 if self.config.get('apply_pca', False):
                     print("Applying PCA to uplifted features for visualization.")
+                    if self.config.get('l2norm_pca', False):
+                        features = features / (features.norm(dim=1, keepdim=True) + 1e-7)
                     features = torch.from_numpy(
-                        PCA(n_components=3).fit_transform(self.features.cpu().numpy())
+                        PCA(n_components=3).fit_transform(features.cpu().numpy())
                     ).cuda()
                 self.save_images(features, pca=self.features.shape[1]>3, **eval_kwargs)
         self.gaussian.save_ply(os.path.join(self.logdir, "gaussians.ply"))

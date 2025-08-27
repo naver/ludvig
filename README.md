@@ -15,7 +15,8 @@ This repository contains code for [LUDVIG: Learning-free Uplifting of 2D Visual 
    - [Demo for open-vocabulary object removal](#demo-for-open-vocabulary-object-removal) 
 4. [Reproducing results](#reproducing-results)
    - [Foreground/background segmentation](#foregroundbackground-segmentation)
-   - [Open-vocabulary object localization](#open-vocabulary-object-localization)
+   - [Open-vocabulary object segmentation](#open-vocabulary-object-segmentation)
+   - [Open-vocabulary semantic segmentation](#open-vocabulary-semantic-segmentation)
 5. [Citing LUDVIG](#citing-ludvig)
 6. [License](#license)
 
@@ -211,7 +212,7 @@ with the following arguments:
 </details>
 
 
-### Open-vocabulary object localization
+### Open-vocabulary object segmentation
 
 #### Data
 
@@ -245,6 +246,46 @@ dataset/lerf_ovs
     To reproduce our results on object localization, you can run `bash scripts/lerf_eval.sh $scene lerf_eval --no_diffusion`. <br>
     The evaluation results (IoU and localization accuracy) are saved in `logs/lerf/$scene/iou.txt`, the mask predictions in `logs/lerf/$scene/masks*`, and the localization heatmaps in `logs/lerf/$scene/localization`.
 
+### Open-vocabulary semantic segmentation
+
+#### Data
+
+We evaluate on the ScanNet dataset, following [OpenGaussian](https://github.com/yanmin-wu/OpenGaussian)'s evaluation protocol, with all data directly provided by them: the images (`color`), 2D feature maps (`language_features`), camera poses (`transforms_train.json`, `transforms_test.json`), and initial point cloud (`points3d.ply`).
+
+We train Gaussian Splatting exactly as in OpenGaussian's **Stage 0**, *i.e.*, with fixed Gaussian positions and the densification process disabled.
+
+After Gaussian Splatting reconstruction, the data should match the following structure:
+
+```plaintext
+dataset/scannet
+├── scene0000_00/
+│   ├── color/
+│   ├── gs/
+│   ├── language_features/
+│   ├── points3d.ply
+│   ├── scene0000_00_vh_clean_2.labels.ply
+│   ├── transforms_test.json
+│   └── transforms_train.json
+└── ...
+```
+The evaluated scenes are `scene0000_00`, `scene0062_00`, `scene0070_00`, `scene0097_00`, `scene0140_00`, `scene0200_00`, `scene0347_00`, `scene0400_00`, `scene0590_00`, and `scene0645_00`.
+
+#### Uplifting
+
+We replace OpenGaussian's quantization-based feature training with our uplifting, starting from the same 2D feature maps. These feature maps are obtained by assigning a CLIP feature to each instance mask generated using SAM in *everything* mode.
+They are directly provided by OpenGaussian under `language_features`. 
+
+To uplift the features, run:
+```bash
+bash script/scannet.sh $scene
+```
+
+##### Evaluation
+
+We evaluate 3D semantic segmentation using OpenGaussian's protocol. Specifically, each Gaussian is assigned the textual label with the highest CLIP similarity. *Note that OpenGaussian only evaluates Gaussians with opacity greater than 0.1.*
+```bash
+python scripts/eval_scannet.py
+```
 
 ## Citing LUDVIG
 
@@ -262,4 +303,4 @@ For any inquiries or contributions, please reach out to jltmarrie@gmail.com.
 
 ## License
 
-*LUDVIG*, Copyright (C) 2024, 2025 Inria and NAVER Corp., CC BY-NC-SA 4.0 [License](./LICENSE.txt).
+*LUDVIG*, Copyright (C) 2024, 2025 Inria and Naver Corporation. All Rights Reserved. [License](./LICENSE.txt).
